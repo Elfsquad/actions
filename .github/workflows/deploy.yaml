@@ -1,0 +1,60 @@
+on:
+  workflow_call:
+    inputs:
+      docker_file:
+        type: string
+        required: true
+      docker_context:
+        type: string
+        required: true
+      namespace:
+        type: string
+        required: true
+      app_name:
+        type: string
+        required: true
+    secrets:
+      ACR_USERNAME:
+        required: true
+      ACR_PASSWORD:
+        required: true
+      AZURE_KUBERNETES:
+        required: true
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2.4.0
+      - name: Get current datestamp
+        id: datestamp
+        shell: bash
+        run: echo "::set-output name=datestamp::$(date '+%G%m%d%H%M%s')"
+
+      - name: Azure Container Registry Login
+        uses: Azure/docker-login@1
+        with:
+          username: ${{ secrets.ACR_USERNAME }} 
+          password: ${{ secrets.ACR_PASSWORD }}
+          login-server: https://elfsquad.azurecr.io
+
+      #TODO(Stan): use dynamic env var instead of hard-coded runner path
+      - name: Build Docker image
+        shell: bash
+        run: |
+          cd /home/runner/work/cpq/cpq
+          docker build -f ${{ inputs.docker_file }} -t elfsquad.azurecr.io/${{ inputs.app_name }}:${{ inputs.namespace }} ${{ inputs.docker_context }}
+
+      - name: Push Docker image
+        shell: bash
+        run: docker push elfsquad.azurecr.io/${{ inputs.app_name }}:${{ inputs.namespace }}
+
+      - uses: azure/aks-set-context@v1
+        with:
+          creds: ${{ secrets.AZURE_KUBERNETES }}
+          cluster-name: kube-we-1
+          resource-group: Elfsquad
+
+      - run: kubectl rollout restart deployment ${{ inputs.app_name }}-deployment -n ${{ inputs.namespace }}
+        shell: bashv
+

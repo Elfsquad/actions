@@ -56,5 +56,4 @@ jobs:
           resource-group: Elfsquad
 
       - run: kubectl rollout restart deployment ${{ inputs.app_name }}-deployment -n ${{ inputs.namespace }}
-        shell: bashv
-
+        shell: bash

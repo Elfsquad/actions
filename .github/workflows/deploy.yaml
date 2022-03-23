@@ -32,7 +32,7 @@ jobs:
         run: echo "::set-output name=datestamp::$(date '+%G%m%d%H%M%s')"
 
       - name: Azure Container Registry Login
-        uses: Azure/docker-login@1
+        uses: Azure/docker-login@v1
         with:
           username: ${{ secrets.ACR_USERNAME }} 
           password: ${{ secrets.ACR_PASSWORD }}

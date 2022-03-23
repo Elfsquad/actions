@@ -42,7 +42,7 @@ jobs:
       - name: Build Docker image
         shell: bash
         run: |
-          cd /home/runner/work/cpq/cpq
+          cd $GITHUB_WORKSPACE
           docker build -f ${{ inputs.docker_file }} -t elfsquad.azurecr.io/${{ inputs.app_name }}:${{ inputs.namespace }} ${{ inputs.docker_context }}
 
       - name: Push Docker image

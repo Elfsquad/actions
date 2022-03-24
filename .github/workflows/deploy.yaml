@@ -38,7 +38,6 @@ jobs:
           password: ${{ secrets.ACR_PASSWORD }}
           login-server: https://elfsquad.azurecr.io
 
-      #TODO(Stan): use dynamic env var instead of hard-coded runner path
       - name: Build Docker image
         shell: bash
         run: |
@@ -54,6 +53,3 @@ jobs:
           creds: ${{ secrets.AZURE_KUBERNETES }}
           cluster-name: kube-we-1
           resource-group: Elfsquad
-
-      - run: kubectl rollout restart deployment ${{ inputs.app_name }}-deployment -n ${{ inputs.namespace }}
-        shell: bash

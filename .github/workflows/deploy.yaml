@@ -14,9 +14,9 @@ on:
         type: string
         required: true
       rollout:
-        type: boolean
+        type: string
         required: false
-        default: false
+        default: 'false'
     secrets:
       ACR_USERNAME:
         required: true
@@ -70,5 +70,5 @@ jobs:
           resource-group: Elfsquad
       
       - run: kubectl rollout restart deployment ${{ inputs.app_name }}-deployment -n ${{ inputs.namespace }}
-        if: ${{ inputs.rollout }}
+        if: ${{ inputs.rollout == 'true' }}
         shell: bash

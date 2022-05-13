@@ -13,6 +13,10 @@ on:
       app_name:
         type: string
         required: true
+      rollout:
+        type: boolean
+        required: false
+        default: false
     secrets:
       ACR_USERNAME:
         required: true
@@ -53,3 +57,7 @@ jobs:
           creds: ${{ secrets.AZURE_KUBERNETES }}
           cluster-name: kube-we-1
           resource-group: Elfsquad
+      
+      - run: kubectl rollout restart deployment ${{ inputs.app_name }}-deployment -n ${{ inputs.namespace }}
+        if: ${{ inputs.rollout }}
+        shell: bash

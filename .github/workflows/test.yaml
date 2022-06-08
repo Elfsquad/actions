@@ -57,7 +57,7 @@ jobs:
         run: cd $GITHUB_WORKSPACE/${{ inputs.path }} && dotnet restore
 
       - name: Build
-        run: cd $GITHUB_WORKSPACE/${{ inputs.path }} && dotnet build
+        run: cd $GITHUB_WORKSPACE/${{ inputs.path }} && dotnet build --no-restore
 
       - name: Run tests
         run: cd $GITHUB_WORKSPACE/${{ inputs.path }} && dotnet test --no-build

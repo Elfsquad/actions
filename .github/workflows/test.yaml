@@ -19,16 +19,29 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2.4.0
+
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v1.9.0
         with:
           dotnet-version: ${{ inputs.dotnet_version }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
       - name: Setup kernel for tests, increase instances
         run: echo fs.inotify.max_user_instances=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
       - name: Setup kernel for tests, increase watchers
         run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
       - name: Run Tests
         run: cd $GITHUB_WORKSPACE/${{ inputs.path }} && dotnet test
+
       - name: Notify if failed
         uses: skitionek/notify-microsoft-teams@master
         if: github.event_name != 'pull_request' && failure()

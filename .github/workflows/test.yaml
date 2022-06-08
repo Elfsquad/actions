@@ -1,0 +1,35 @@
+on:
+  workflow_call:
+    inputs:
+      name:
+        type: string
+        required: true
+      dotnet_version:
+        type: string
+        required: true
+      path:
+        type: string
+        required: true
+    secrets:
+      TEAMS_HEALTH_WEBHOOK:
+        required: true
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2.4.0
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v1.9.0
+        with:
+          dotnet-version: ${{ inputs.dotnet_version }}
+      - name: Run Tests
+        run: cd $GITHUB_WORKSPACE/${{ inputs.path }} && dotnet test
+      - name: Notify if failed
+        uses: skitionek/notify-microsoft-teams@master
+        if: github.event_name != 'pull_request' && failure()
+        with:
+          job: ${{ toJson(job) }}
+          webhook_url: ${{ secrets.TEAMS_HEALTH_WEBHOOK }}
+          overwrite: "{title: '${{ inputs.name }} are failing'}"
+

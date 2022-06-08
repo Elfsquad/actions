@@ -18,6 +18,11 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-20.04
     steps:
+      - name: Setup kernel for tests, increase instances
+        run: echo fs.inotify.max_user_instances=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+      - name: Setup kernel for tests, increase watchers
+        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
       - uses: actions/checkout@v2.4.0
 
       - name: Setup .NET Core SDK
@@ -26,20 +31,18 @@ jobs:
           dotnet-version: ${{ inputs.dotnet_version }}
 
       - name: Cache NuGet packages
+        id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.nuget/packages
+          path: |
+            ~/.nuget/packages
+            **/project.assets.json
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
 
-      - name: Setup kernel for tests, increase instances
-        run: echo fs.inotify.max_user_instances=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
-
-      - name: Setup kernel for tests, increase watchers
-        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
-
       - name: Restore
+        if: steps.cache.outputs.cache-hit != 'true'
         run: cd $GITHUB_WORKSPACE/${{ inputs.path }} && dotnet restore
 
       - name: Build

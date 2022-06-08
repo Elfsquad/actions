@@ -47,8 +47,9 @@ jobs:
           path: |
             **/*.dll
             **/*.deps.json
-          key: ${{ runner.os }}-migration-cache-${{ hashFiles('**/*.deps.json') }}
+          key: ${{ runner.os }}-build-cache-${{ hashFiles('**/*.deps.json') }}
           restore-keys: |
+            ${{ runner.os }}-build-cache-
 
 
       - name: Restore

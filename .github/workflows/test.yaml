@@ -30,17 +30,6 @@ jobs:
         with:
           dotnet-version: ${{ inputs.dotnet_version }}
 
-      - name: Cache NuGet packages
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.nuget/packages
-            **/project.assets.json
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-      
       - name: Cache build output
         uses: actions/cache@v3
         with:

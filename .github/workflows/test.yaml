@@ -41,15 +41,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
       
-      - name: Cache migrations
+      - name: Cache build output
         uses: actions/cache@v3
         with:
           path: 
-            /home/runner/work/cpq/cpq/src/Core/Elfskot.Core.Migrations/bin
-            /home/runner/work/cpq/cpq/src/Core/Elfskot.Core.Migrations/obj
-          key: ${{ runner.os }}-migration-cache-${{ hashFiles('/home/runner/work/cpq/cpq/src/Core/Elfskot.Core.Migrations/**/*.cs') }}
+            **/*.dll
+            **/*.deps.json
+          key: ${{ runner.os }}-migration-cache-${{ hashFiles('**/*.deps.json') }}
           restore-keys: |
-            ${{ runner.os }}-migration-cache-
 
 
       - name: Restore

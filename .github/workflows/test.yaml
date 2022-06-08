@@ -40,6 +40,17 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
+      
+      - name: Cache migrations
+        uses: actions/cache@v3
+        with:
+          path: 
+            /home/runner/work/cpq/cpq/src/Core/Elfskot.Core.Migrations/bin
+            /home/runner/work/cpq/cpq/src/Core/Elfskot.Core.Migrations/obj
+          key: ${{ runner.os }}-migration-cache-${{ hashFiles('/home/runner/work/cpq/cpq/src/Core/Elfskot.Core.Migrations/**/*.cs') }}
+          restore-keys: |
+            ${{ runner.os }}-migration-cache-
+
 
       - name: Restore
         if: steps.cache.outputs.cache-hit != 'true'

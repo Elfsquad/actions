@@ -23,7 +23,7 @@ on:
       ACR_PASSWORD:
         required: true
       AZURE_KUBERNETES:
-        required: true
+        required: false
 
 jobs:
   build_and_deploy:

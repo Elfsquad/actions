@@ -70,6 +70,7 @@ jobs:
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
       - uses: azure/aks-set-context@v1
+        if: ${{ inputs.rollout == 'true' }}
         with:
           creds: ${{ secrets.AZURE_KUBERNETES }}
           cluster-name: kube-we-1

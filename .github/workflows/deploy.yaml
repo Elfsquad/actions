@@ -9,7 +9,7 @@ on:
         required: true
       namespace:
         type: string
-        required: true
+        required: false
       app_name:
         type: string
         required: true

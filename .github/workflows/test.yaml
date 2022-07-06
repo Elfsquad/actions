@@ -16,7 +16,7 @@ on:
 
 jobs:
   build_and_deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-20.04
     steps:
       - name: Setup kernel for tests, increase instances
         run: echo fs.inotify.max_user_instances=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p

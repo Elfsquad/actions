@@ -35,7 +35,7 @@ jobs:
           path: project
 
       - name: Run tests
-        run: cd project/${{ inputs.path }} && dotnet test --no-build
+        run: cd project && dotnet test --no-build
 
       - name: Notify if failed
         uses: skitionek/notify-microsoft-teams@master

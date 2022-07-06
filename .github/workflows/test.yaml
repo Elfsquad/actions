@@ -7,7 +7,7 @@ on:
       dotnet_version:
         type: string
         required: true
-      path:
+      artifact_name:
         type: string
         required: true
     secrets:
@@ -15,42 +15,27 @@ on:
         required: true
 
 jobs:
-  build_and_deploy:
+  Test:
     runs-on: ubuntu-20.04
     steps:
       - name: Setup kernel for tests, increase instances
         run: echo fs.inotify.max_user_instances=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
       - name: Setup kernel for tests, increase watchers
         run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
-
-      - uses: actions/checkout@v2.4.0
 
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v1.9.0
         with:
           dotnet-version: ${{ inputs.dotnet_version }}
 
-      - name: Cache build output
-        uses: actions/cache@v3
+      - uses: actions/download-artifact@v3
         with:
-          path: |
-            **/*.dll
-            **/*.deps.json
-          key: ${{ runner.os }}-build-cache-${{ hashFiles('**/*.deps.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-cache-
-
-
-      - name: Restore
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: cd $GITHUB_WORKSPACE/${{ inputs.path }} && dotnet restore
-
-      - name: Build
-        run: cd $GITHUB_WORKSPACE/${{ inputs.path }} && dotnet build --no-restore
+          name: ${{ inputs.artifact_name }}
+          path: project
 
       - name: Run tests
-        run: cd $GITHUB_WORKSPACE/${{ inputs.path }} && dotnet test --no-build
-
+        run: cd project/${{ inputs.path }} && dotnet test --no-build
 
       - name: Notify if failed
         uses: skitionek/notify-microsoft-teams@master
